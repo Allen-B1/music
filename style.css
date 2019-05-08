@@ -1,0 +1,60 @@
+body {
+	background: #eee;
+	font-family: sans-serif;
+	font-size: 14px;
+	margin:0; padding: 0;
+}
+
+input, button, .button, .raised {
+	font-family: sans-serif;
+	font-size: 14px;
+	border: 0;
+	box-shadow: 4px 4px #000;
+	position: relative;
+	padding: 8px 16px;
+	text-decoration: none;
+}
+
+button, input, .button {
+	color: #fff;
+	background: #0CA5F2;
+	display: inline-block;
+}
+
+button:focus, .button:focus,
+input:focus {
+	box-shadow: 6px 6px #000;
+	top: -2px;
+	left: -2px;
+}
+button:active, .button:active {
+	box-shadow: 2px 2px #000;
+	top: 2px;
+	left: 2px;
+}
+
+.main, .wide {
+	width: 100%;
+	width: fill-available;
+	width: -moz-available;
+	width: -webkit-fill-available;
+}
+
+main {
+	margin:auto;
+	margin-top: 32px;
+	max-width: 700px;
+	text-align: center;
+}
+
+button.main, .button.main {
+	background: #F2A10C;
+}
+
+.score {
+	position: fixed;
+	top: 16px;
+	left: 16px;
+	background: #0ACB0A;
+	color: #fff;
+}

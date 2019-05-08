@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>Guess the piece</title>
+		<link rel="stylesheet" href="style.css">
+	</head>
+	<body>
+		<span class="raised score">{{.Score}}</span>
+		<main>
+			<img alt="Incipit" style="background:#fff" class="wide raised" src="{{.Item.Image}}">
+			<form method="POST" action="/submit">
+				<input type="hidden" name="id" value="{{.Item.Id}}">
+				<p><input type="text" name="name" placeholder="Name"> in <input type="text" name="key" placeholder="Key (e.g. F# major)"> by <input type="text" name="composer" placeholder="Composer"></p>
+				<button class="main" type="submit">Guess</button>
+			</form>
+		</main>
+	</body>
+</html>
