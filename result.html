@@ -11,17 +11,17 @@
 			<p>
 				<span style="color:{{if ieq .Item.Name .Name}}green{{else}}red{{end}}">
 				{{.Item.Name}}
-				{{if ieq .Item.Name .Name}}+5{{else}}+0{{end}}
+				({{if ieq .Item.Name .Name}}+5{{else}}+0{{end}})
 				</span>
 				in
 				<span style="color:{{if ieq .Item.Key .Key}}green{{else}}red{{end}}">
 				{{.Item.Key}}
-				{{if ieq .Item.Key .Key}}+2{{else}}+0{{end}}
+				({{if ieq .Item.Key .Key}}+2{{else}}+0{{end}})
 				</span>
 				by
 				<span style="color:{{if ieq .Item.Composer .Composer}}green{{else}}red{{end}}">
 				{{.Item.Composer}}
-				{{if ieq .Item.Composer .Composer}}+3{{else}}+0{{end}}
+				({{if ieq .Item.Composer .Composer}}+3{{else}}+0{{end}})
 				</span></p>
 			<a class="main button" href="/piece">Back</a>
 		</main>
