@@ -10,19 +10,19 @@
 		<main>
 			<img alt="Incipit" style="background:#fff" class="wide raised"  width="100%" src="{{.Item.Image}}">
 			<p>
-				<span style="color:{{if ieq .Item.Name .Name}}green{{else}}red{{end}}">
+				<span style="color:{{if eq .Results.Name 2}}green{{else if eq .Results.Name 1}}gold{{else}}red{{end}}">
 				{{.Item.Name}}
-				({{if ieq .Item.Name .Name}}+5{{else}}+0{{end}})
+				({{if eq .Results.Name 2}}+6{{else if eq .Results.Name 1}}+3{{else}}+0{{end}})
 				</span>
 				in
-				<span style="color:{{if ieq .Item.Key .Key}}green{{else}}red{{end}}">
+				<span style="color:{{if.Results.Key}}green{{else}}red{{end}}">
 				{{.Item.Key}}
-				({{if ieq .Item.Key .Key}}+2{{else}}+0{{end}})
+				({{if .Results.Key}}+1{{else}}+0{{end}})
 				</span>
 				by
-				<span style="color:{{if ieq .Item.Composer .Composer}}green{{else}}red{{end}}">
+				<span style="color:{{if .Results.Composer}}green{{else}}red{{end}}">
 				{{.Item.Composer}}
-				({{if ieq .Item.Composer .Composer}}+3{{else}}+0{{end}})
+				({{if .Results.Composer}}+3{{else}}+0{{end}})
 				</span></p>
 			<a class="main button" href="/piece">Back</a>
 		</main>

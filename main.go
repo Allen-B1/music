@@ -177,23 +177,14 @@ func main() {
 			io.WriteString(w, "Internal error")
 		}
 
-		if strings.EqualFold(name, inc[id].Name) {
-			session.Score += 5
-		}
-		if strings.EqualFold(composer, inc[id].Composer) {
-			session.Score += 3
-		}
-		if strings.EqualFold(key, inc[id].Key) {
-			session.Score += 2
-		}
-
 		session.LastPiece = id
 		session.PieceCount += 1
 
+		results := NewResultsFromPiece(&inc[id], name, composer, key)
+		session.Score += results.Total()
+
 		values := url.Values{
-			"name":     []string{name},
-			"composer": []string{composer},
-			"key":      []string{key},
+			"results": []string{results.String()},
 		}
 
 		w.Header().Set("Location", "/result?"+values.Encode())
@@ -211,11 +202,10 @@ func main() {
 		}
 
 		query := r.URL.Query()
+		results := NewResults(query.Get("results"))
 		in := map[string]interface{}{
-			"Composer": query.Get("composer"),
-			"Name":     query.Get("name"),
-			"Key":      query.Get("key"),
-			"Session":  session,
+			"Results": results,
+			"Session": session,
 		}
 		if session.LastPiece < 0 {
 			w.Header().Set("Location", "/piece")
