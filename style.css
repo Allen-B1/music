@@ -55,6 +55,14 @@ button.main, .button.main {
 	position: fixed;
 	top: 16px;
 	left: 16px;
-	background: #0ACB0A;
+	background: #00CC00;
 	color: #fff;
+	padding: 0;
+}
+.score > * {
+	display: inline-block;
+	padding: 8px 16px;
+}
+.score *:last-child {
+	background: #007F00;
 }

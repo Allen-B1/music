@@ -78,7 +78,7 @@ func main() {
 		return
 	}
 
-  fmt.Println("https://localhost:8080/")
+	fmt.Println("http://localhost:8080/")
 
 	http.HandleFunc("/style.css", func (w http.ResponseWriter, r *http.Request) {
 		http.ServeFile(w, r, "style.css")
@@ -117,6 +117,7 @@ func main() {
 	err = t.Execute(w, &map[string]interface{} {
 		"Item": piece,
 		"Score": session.Score,
+		"PieceCount": session.PieceCount,
 	})
 	if err != nil {
 		w.WriteHeader(500)
@@ -150,6 +151,8 @@ func main() {
 		session.Score += 2
 	}
 
+	session.PieceCount += 1
+
 	values := url.Values{
 		"name": []string{name},
 		"composer": []string{composer},
@@ -172,6 +175,7 @@ func main() {
 	in["Name"] = query.Get("name")
 	in["Key"] = query.Get("key")
 	in["Score"] = session.Score
+	in["PieceCount"] = session.PieceCount
 	if session.LastPiece < 0 {
 		w.Header().Set("Location", "/piece")
 		w.WriteHeader(303)
