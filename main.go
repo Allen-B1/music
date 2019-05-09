@@ -81,6 +81,7 @@ func main() {
 	fmt.Println("http://localhost:8080/")
 
 	http.HandleFunc("/style.css", func (w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Cache-Control", "public")
 		http.ServeFile(w, r, "style.css")
 	})
 
@@ -107,6 +108,9 @@ func main() {
 		pieceid++
 	}
 	session.LastPiece = pieceid
+	if pieceid >= len(inc) {
+		pieceid = 0
+	}
 	var piece = inc[pieceid]
 	t, err := NewTemplate("music.html")
 	if err != nil {
