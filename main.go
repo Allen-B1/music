@@ -80,8 +80,6 @@ func main() {
 		return
 	}
 
-	fmt.Println("http://localhost:8080/")
-
 	http.HandleFunc("/style.css", func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Cache-Control", "public")
 		http.ServeFile(w, r, "style.css")
@@ -180,7 +178,7 @@ func main() {
 		session.LastPiece = id
 		session.PieceCount += 1
 
-		results := NewResultsFromPiece(&inc[id], name, composer, key)
+		results := NewResultsFromPiece(&inc[id], composer, name, key)
 		session.Score += results.Total()
 
 		values := url.Values{
@@ -233,5 +231,6 @@ func main() {
 	if len(port) == 0 {
 		port = "8080"
 	}
-	http.ListenAndServe(":"+port, nil)
+	fmt.Println("http://localhost:" + port + "/")
+	fmt.Fprintln(os.Stderr, http.ListenAndServe(":"+port, nil))
 }

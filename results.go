@@ -68,8 +68,28 @@ func NewResultsFromPiece(i *Incipit, composer string, name string, key string) R
 	results := Results{}
 	if strings.EqualFold(name, i.Name) {
 		results.Name = 2
-	} else if strings.Contains(strings.ToLower(i.Name), strings.ToLower(name)) {
-		results.Name = 1
+	} else {
+		fields := strings.Fields(i.Name)
+		fieldsguess := strings.Fields(name)
+
+		wordscorrect := 0
+		wordswrong := 0
+	outer:
+		for _, guess := range fieldsguess {
+			for _, word := range fields {
+				if strings.EqualFold(guess, word) {
+					wordscorrect += 1
+					continue outer
+				}
+			}
+			wordswrong += 1
+		}
+
+		if wordscorrect > wordswrong*2 && wordswrong <= 1 {
+			results.Name = 1
+		} else {
+			results.Name = 0
+		}
 	}
 	if strings.EqualFold(composer, i.Composer) {
 		results.Composer = true
