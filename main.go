@@ -11,6 +11,7 @@ import (
 	"os"
 	"strconv"
 	"strings"
+	"time"
 )
 
 const DEBUG = false
@@ -77,6 +78,8 @@ func GetSession(w http.ResponseWriter, r *http.Request) *Session {
 }
 
 func main() {
+	rand.Seed(time.Now().UnixNano())
+
 	inc, err := ListIncipits()
 	if err != nil {
 		fmt.Fprintln(os.Stderr, err)
