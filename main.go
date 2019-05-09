@@ -94,6 +94,7 @@ func main() {
 			w.WriteHeader(303)
 			return
 		}
+		w.Header().Set("Cache-Control", "no-store")
 		http.ServeFile(w, r, "start.html")
 	})
 
@@ -125,6 +126,7 @@ func main() {
 			w.WriteHeader(404)
 			return
 		}
+		w.Header().Set("Cache-Control", "public")
 		err = t.Execute(w, session)
 		if err != nil {
 			fmt.Fprintln(os.Stderr, err)
@@ -157,6 +159,7 @@ func main() {
 			w.WriteHeader(500)
 			fmt.Fprintln(w, err)
 		}
+		w.Header().Set("Cache-Control", "no-store")
 		w.Header().Set("Content-Type", "text/html")
 		err = t.Execute(w, &map[string]interface{}{
 			"Item":    piece,
@@ -236,6 +239,7 @@ func main() {
 			fmt.Fprintln(w, err)
 			return
 		}
+		w.Header().Set("Cache-Control", "no-store")
 		w.Header().Set("Content-Type", "text/html")
 		err = t.Execute(w, in)
 		if err != nil {
