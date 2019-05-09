@@ -10,13 +10,26 @@ type Session struct {
 	Score      uint
 	PieceCount uint
 	LastPiece  int
+	ViewId     string
 }
 
 var SessionMap = make(map[string]*Session)
 
-func NewSession() string {
+// Maps public to private id
+var ViewMap = make(map[string]string)
+
+func NewSession(name string) string {
 	id := strconv.FormatInt(rand.Int63(), 36)
 	SessionMap[id] = new(Session)
 	SessionMap[id].LastPiece = -1
+	SessionMap[id].Name = name
+
+	vid := strconv.FormatInt(rand.Int63n(36*36*36*36*36), 36) + "-" + name
+	ViewMap[vid] = id
+	SessionMap[id].ViewId = vid
 	return id
+}
+
+func ViewGet(id string) *Session {
+	return SessionMap[ViewMap[id]]
 }

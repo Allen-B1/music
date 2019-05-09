@@ -102,15 +102,32 @@ func main() {
 		}
 
 		if cookie, err := r.Cookie("sid"); cookie == nil || err != nil || SessionMap[cookie.Value] == nil {
-			id := NewSession()
+			id := NewSession(r.PostFormValue("name"))
 			http.SetCookie(w, &http.Cookie{
 				Name:  "sid",
 				Value: id,
 			})
-			SessionMap[id].Name = r.PostFormValue("name")
 		}
 		w.Header().Set("Location", "/piece")
 		w.WriteHeader(303)
+	})
+
+	http.HandleFunc("/profile", func(w http.ResponseWriter, r *http.Request) {
+		t, err := NewTemplate("profile.html")
+		if err != nil {
+			fmt.Fprintln(os.Stderr, err)
+			w.WriteHeader(500)
+			return
+		}
+		session := ViewGet(r.URL.Query().Get("user"))
+		if session == nil {
+			w.WriteHeader(404)
+			return
+		}
+		err = t.Execute(w, session)
+		if err != nil {
+			fmt.Fprintln(os.Stderr, err)
+		}
 	})
 
 	http.HandleFunc("/piece", func(w http.ResponseWriter, r *http.Request) {
