@@ -84,7 +84,7 @@ func main() {
 	}
 
 	http.HandleFunc("/style.css", func(w http.ResponseWriter, r *http.Request) {
-		w.Header().Set("Cache-Control", "public")
+		w.Header().Set("Cache-Control", "public, max-age=5")
 		http.ServeFile(w, r, "style.css")
 	})
 
