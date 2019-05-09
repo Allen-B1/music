@@ -10,8 +10,45 @@
 			<img alt="Incipit" style="background:#fff" class="wide raised" src="{{.Item.Image}}">
 			<form method="POST" action="/submit">
 				<input type="hidden" name="id" value="{{.Item.Id}}">
-				<p><input type="text" name="name" placeholder="Name"> in <input type="text" name="key" placeholder="Key (e.g. F# major)"> by <input type="text" name="composer" placeholder="Composer"></p>
+				<p><input type="text" name="name" placeholder="Name">
+                in <input type="text" name="key" list="keys" size="5" placeholder="Key">
+                by <input type="text" name="composer" size="7" placeholder="Composer"></p>
 				<button class="main" type="submit">Guess</button>
+
+                <datalist id="keys">
+                    <option value="Cb major">
+                    <option value="Gb major">
+                    <option value="Db major">
+                    <option value="Ab major">
+                    <option value="Eb major">
+                    <option value="Bb major">
+                    <option value="F major">
+                    <option value="C major">
+                    <option value="G major">
+                    <option value="D major">
+                    <option value="A major">
+                    <option value="E major">
+                    <option value="B major">
+                    <option value="F# major">
+                    <option value="C# major">
+                    <option value="G# major">
+
+                    <option value="Ab minor">
+                    <option value="Eb minor">
+                    <option value="Bb minor">
+                    <option value="F minor">
+                    <option value="C minor">
+                    <option value="G minor">
+                    <option value="D minor">
+                    <option value="A minor">
+                    <option value="E minor">
+                    <option value="B minor">
+                    <option value="F# minor">
+                    <option value="C# minor">
+                    <option value="G# minor">
+                    <option value="D# minor">
+                    <option value="A# minor">
+                </datalist>
 			</form>
 		</main>
 	</body>
