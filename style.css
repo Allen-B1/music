@@ -59,10 +59,10 @@ button.main, .button.main {
 	color: #fff;
 	padding: 0;
 }
-.score > * {
+.score span {
 	display: inline-block;
 	padding: 8px 16px;
 }
-.score *:last-child {
+.score span:last-child {
 	background: #007F00;
 }

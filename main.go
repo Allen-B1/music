@@ -1,24 +1,26 @@
 package main
 
 import (
-	"fmt"
-	"net/http"
 	"encoding/csv"
-	"os"
-	"math/rand"
+	"fmt"
 	"html/template"
-	"strconv"
 	"io"
-	"strings"
+	"math/rand"
+	"net/http"
 	"net/url"
+	"os"
+	"strconv"
+	"strings"
 )
+
+const DEBUG = false
 
 type Incipit struct {
 	Composer string
-	Name string
-	Key string
-	Image string
-	Id uint
+	Name     string
+	Key      string
+	Image    string
+	Id       uint
 }
 
 func (i Incipit) String() string {
@@ -31,29 +33,29 @@ func NewTemplate(path string) (*template.Template, error) {
 	}).ParseFiles(path)
 }
 
-func ListIncipits() ([]Incipit, error)  {
+func ListIncipits() ([]Incipit, error) {
 	file, err := os.Open("incipits.csv")
 	if err != nil {
 		return nil, err
 	}
- 	records, err := csv.NewReader(file).ReadAll()
+	records, err := csv.NewReader(file).ReadAll()
 	out := make([]Incipit, 0)
 	for i, record := range records {
 		if len(record) != 4 {
 			return nil, fmt.Errorf("Record contains less or more than 4 items")
 		}
-		out = append(out, Incipit {
+		out = append(out, Incipit{
 			Composer: record[0],
-			Name: record[1],
-			Key: record[2],
-			Image: record[3],
-			Id: uint(i),
+			Name:     record[1],
+			Key:      record[2],
+			Image:    record[3],
+			Id:       uint(i),
 		})
 	}
 	return out, err
 }
 
-func GetSession (w http.ResponseWriter, r *http.Request) *Session {
+func GetSession(w http.ResponseWriter, r *http.Request) *Session {
 	sid, err := r.Cookie("sid")
 	if err != nil {
 		w.Header().Set("Location", "/")
@@ -80,16 +82,16 @@ func main() {
 
 	fmt.Println("http://localhost:8080/")
 
-	http.HandleFunc("/style.css", func (w http.ResponseWriter, r *http.Request) {
+	http.HandleFunc("/style.css", func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Cache-Control", "public")
 		http.ServeFile(w, r, "style.css")
 	})
 
-	http.HandleFunc("/", func (w http.ResponseWriter, r *http.Request) {
+	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		id := NewSession()
 		if cookie, err := r.Cookie("sid"); cookie == nil || err != nil {
 			http.SetCookie(w, &http.Cookie{
-				Name: "sid",
+				Name:  "sid",
 				Value: id,
 			})
 		}
@@ -97,114 +99,134 @@ func main() {
 		w.WriteHeader(303)
 	})
 
-  http.HandleFunc("/piece", func (w http.ResponseWriter, r *http.Request) {
-	session := GetSession(w, r)
-	if session == nil {
-		return
-	}
+	http.HandleFunc("/piece", func(w http.ResponseWriter, r *http.Request) {
+		// GET: Do not change anything
 
-	pieceid := rand.Intn(len(inc))
-	if pieceid == session.LastPiece {
-		pieceid++
-	}
-	session.LastPiece = pieceid
-	if pieceid >= len(inc) {
-		pieceid = 0
-	}
-	var piece = inc[pieceid]
-	t, err := NewTemplate("music.html")
-	if err != nil {
-		w.WriteHeader(500)
-		fmt.Fprintln(w, err)
-	}
-	w.Header().Set("Content-Type", "text/html")
-	err = t.Execute(w, &map[string]interface{} {
-		"Item": piece,
-		"Score": session.Score,
-		"PieceCount": session.PieceCount,
+		session := GetSession(w, r)
+		if session == nil {
+			return
+		}
+
+		pieceid := rand.Intn(len(inc))
+		if pieceid == session.LastPiece {
+			pieceid++
+		}
+
+		if DEBUG {
+			fmt.Println("/piece", session.LastPiece)
+		}
+
+		if pieceid >= len(inc) {
+			pieceid = 0
+		}
+		var piece = inc[pieceid]
+		t, err := NewTemplate("music.html")
+		if err != nil {
+			w.WriteHeader(500)
+			fmt.Fprintln(w, err)
+		}
+		w.Header().Set("Content-Type", "text/html")
+		err = t.Execute(w, &map[string]interface{}{
+			"Item":       piece,
+			"Score":      session.Score,
+			"PieceCount": session.PieceCount,
+		})
+		if err != nil {
+			w.WriteHeader(500)
+			fmt.Fprintln(w, err)
+		}
 	})
-	if err != nil {
-		w.WriteHeader(500)
-		fmt.Fprintln(w, err)
-	}
-  })
 
-  http.HandleFunc("/submit", func (w http.ResponseWriter, r *http.Request) {
-	session := GetSession(w,r)
-	if session == nil {
-		return
-	}
+	http.HandleFunc("/submit", func(w http.ResponseWriter, r *http.Request) {
+		if r.Method != "POST" {
+			w.Header().Set("Allow", "POST")
+			w.WriteHeader(405)
+			return
+		}
 
-	name := r.PostFormValue("name")
-	composer := r.PostFormValue("composer")
-	key := r.PostFormValue("key")
-	id, err := strconv.Atoi(r.PostFormValue("id"))
-	if err != nil {
-		w.WriteHeader(500)
-		io.WriteString(w, "Internal server error. We apologize for the inconvenience.")
-		return
-	}
+		session := GetSession(w, r)
+		if session == nil {
+			return
+		}
 
-	if strings.EqualFold(name, inc[id].Name) {
-		session.Score += 5
-	}
-	if strings.EqualFold(composer, inc[id].Composer) {
-		session.Score += 3
-	}
-	if strings.EqualFold(key, inc[id].Key) {
-		session.Score += 2
-	}
+		if DEBUG {
+			fmt.Println("/submit", session.LastPiece)
+		}
 
-	session.PieceCount += 1
+		name := r.PostFormValue("name")
+		composer := r.PostFormValue("composer")
+		key := r.PostFormValue("key")
+		id, err := strconv.Atoi(r.PostFormValue("id"))
+		if err != nil {
+			w.WriteHeader(500)
+			io.WriteString(w, "Internal error")
+		}
 
-	values := url.Values{
-		"name": []string{name},
-		"composer": []string{composer},
-		"key": []string{key},
-	}
+		if strings.EqualFold(name, inc[id].Name) {
+			session.Score += 5
+		}
+		if strings.EqualFold(composer, inc[id].Composer) {
+			session.Score += 3
+		}
+		if strings.EqualFold(key, inc[id].Key) {
+			session.Score += 2
+		}
 
-	w.Header().Set("Location", "/result?" + values.Encode())
-	w.WriteHeader(303)
-  })
+		session.LastPiece = id
+		session.PieceCount += 1
 
-  http.HandleFunc("/result", func (w http.ResponseWriter, r *http.Request) {
-	session := GetSession(w,r)
-	if session == nil {
-		return
-	}
+		values := url.Values{
+			"name":     []string{name},
+			"composer": []string{composer},
+			"key":      []string{key},
+		}
 
-	var in = make(map[string]interface{})
-	query := r.URL.Query()
-	in["Composer"] = query.Get("composer")
-	in["Name"] = query.Get("name")
-	in["Key"] = query.Get("key")
-	in["Score"] = session.Score
-	in["PieceCount"] = session.PieceCount
-	if session.LastPiece < 0 {
-		w.Header().Set("Location", "/piece")
+		w.Header().Set("Location", "/result?"+values.Encode())
 		w.WriteHeader(303)
-		return
-	}
-	in["Item"] = inc[session.LastPiece]
+	})
 
-	t, err := NewTemplate("result.html")
-	if err != nil {
-		w.WriteHeader(500)
-		fmt.Fprintln(w, err)
-		return
-	}
-	w.Header().Set("Content-Type", "text/html")
-	err = t.Execute(w, in)
-	if err != nil {
-		w.WriteHeader(500)
-		fmt.Fprintln(w, err)
-		return
-	}
-  })
+	http.HandleFunc("/result", func(w http.ResponseWriter, r *http.Request) {
+		session := GetSession(w, r)
+		if session == nil {
+			return
+		}
+
+		if DEBUG {
+			fmt.Println("/result", session.LastPiece)
+		}
+
+		var in = make(map[string]interface{})
+		query := r.URL.Query()
+		in["Composer"] = query.Get("composer")
+		in["Name"] = query.Get("name")
+		in["Key"] = query.Get("key")
+		in["Score"] = session.Score
+		in["PieceCount"] = session.PieceCount
+		if session.LastPiece < 0 {
+			w.Header().Set("Location", "/piece")
+			w.WriteHeader(303)
+			return
+		}
+		in["Item"] = inc[session.LastPiece]
+
+		t, err := NewTemplate("result.html")
+		if err != nil {
+			w.WriteHeader(500)
+			fmt.Fprintln(w, err)
+			return
+		}
+		w.Header().Set("Content-Type", "text/html")
+		err = t.Execute(w, in)
+		if err != nil {
+			w.WriteHeader(500)
+			fmt.Fprintln(w, err)
+			return
+		}
+	})
 
 	port := os.Getenv("PORT")
 	if len(port) == 0 {
 		port = "8080"
 	}
-  http.ListenAndServe(":" + port, nil)
+	http.ListenAndServe(":"+port, nil)
 }
