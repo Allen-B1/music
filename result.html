@@ -5,7 +5,7 @@
 		<link rel="stylesheet" href="style.css">
 	</head>
 	<body>
-        <a class="button raised profile" href="/profile?user={{.Session.ViewId}}">{{.Session.Name}}</a>
+        <a class="button raised topleft" href="/profile?user={{.Session.ViewId}}">{{.Session.Name}}</a>
 		<span class="raised score"><span>{{.Session.Score}}</span><span>{{.Session.PieceCount}}</span></span>
 		<main>
 			<img alt="Incipit" style="background:#fff" class="wide raised"  width="100%" src="{{.Item.Image}}">

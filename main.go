@@ -30,6 +30,9 @@ func (i Incipit) String() string {
 func NewTemplate(path string) (*template.Template, error) {
 	return template.New(path).Funcs(template.FuncMap{
 		"ieq": strings.EqualFold,
+		"mulu": func(a uint, b uint) uint {
+			return a * b
+		},
 	}).ParseFiles(path)
 }
 
@@ -101,13 +104,11 @@ func main() {
 			return
 		}
 
-		if cookie, err := r.Cookie("sid"); cookie == nil || err != nil || SessionMap[cookie.Value] == nil {
-			id := NewSession(r.PostFormValue("name"))
-			http.SetCookie(w, &http.Cookie{
-				Name:  "sid",
-				Value: id,
-			})
-		}
+		id := NewSession(r.PostFormValue("name"))
+		http.SetCookie(w, &http.Cookie{
+			Name:  "sid",
+			Value: id,
+		})
 		w.Header().Set("Location", "/piece")
 		w.WriteHeader(303)
 	})

@@ -68,7 +68,8 @@ button.main, .button.main {
 .score span:last-child {
 	background: #007F00;
 }
-.profile {
+
+.topleft {
     position: fixed;
 	top: 16px;
 	left: 16px;
@@ -77,4 +78,12 @@ button.main, .button.main {
 }
 h2 {
     font-size: 24px;
+}
+.topleft:focus {
+    top: 14px;
+    left: 14px;
+}
+.topleft:active {
+    top:18px;
+    left: 18px;
 }
