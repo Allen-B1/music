@@ -5,7 +5,8 @@
 		<link rel="stylesheet" href="style.css">
 	</head>
 	<body>
-		<span class="raised score"><span>{{.Score}}</span><span>{{.PieceCount}}</span></span>
+        <span class="raised profile">{{.Session.Name}}</span>
+		<span class="raised score"><span>{{.Session.Score}}</span><span>{{.Session.PieceCount}}</span></span>
 		<main>
 			<img alt="Incipit" style="background:#fff" class="wide raised"  width="100%" src="{{.Item.Image}}">
 			<p>

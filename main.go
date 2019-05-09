@@ -88,12 +88,28 @@ func main() {
 	})
 
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		id := NewSession()
+		if cookie, _ := r.Cookie("sid"); cookie != nil && SessionMap[cookie.Value] != nil {
+			w.Header().Set("Location", "/piece")
+			w.WriteHeader(303)
+			return
+		}
+		http.ServeFile(w, r, "start.html")
+	})
+
+	http.HandleFunc("/start", func(w http.ResponseWriter, r *http.Request) {
+		if r.Method != "POST" {
+			w.Header().Set("Allow", "POST")
+			w.WriteHeader(405)
+			return
+		}
+
 		if cookie, err := r.Cookie("sid"); cookie == nil || err != nil || SessionMap[cookie.Value] == nil {
+			id := NewSession()
 			http.SetCookie(w, &http.Cookie{
 				Name:  "sid",
 				Value: id,
 			})
+			SessionMap[id].Name = r.PostFormValue("name")
 		}
 		w.Header().Set("Location", "/piece")
 		w.WriteHeader(303)
@@ -127,9 +143,8 @@ func main() {
 		}
 		w.Header().Set("Content-Type", "text/html")
 		err = t.Execute(w, &map[string]interface{}{
-			"Item":       piece,
-			"Score":      session.Score,
-			"PieceCount": session.PieceCount,
+			"Item":    piece,
+			"Session": session,
 		})
 		if err != nil {
 			w.WriteHeader(500)
@@ -195,13 +210,13 @@ func main() {
 			fmt.Println("/result", session.LastPiece)
 		}
 
-		var in = make(map[string]interface{})
 		query := r.URL.Query()
-		in["Composer"] = query.Get("composer")
-		in["Name"] = query.Get("name")
-		in["Key"] = query.Get("key")
-		in["Score"] = session.Score
-		in["PieceCount"] = session.PieceCount
+		in := map[string]interface{}{
+			"Composer": query.Get("composer"),
+			"Name":     query.Get("name"),
+			"Key":      query.Get("key"),
+			"Session":  session,
+		}
 		if session.LastPiece < 0 {
 			w.Header().Set("Location", "/piece")
 			w.WriteHeader(303)

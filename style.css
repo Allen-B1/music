@@ -54,7 +54,7 @@ button.main, .button.main {
 .score {
 	position: fixed;
 	top: 16px;
-	left: 16px;
+	right: 16px;
 	background: #00CC00;
 	color: #fff;
 	padding: 0;
@@ -65,4 +65,12 @@ button.main, .button.main {
 }
 .score span:last-child {
 	background: #007F00;
+}
+
+.profile {
+    position: fixed;
+	top: 16px;
+	left: 16px;
+	background: #00CC00;
+	color: #fff;
 }

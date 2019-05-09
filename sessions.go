@@ -6,9 +6,10 @@ import (
 )
 
 type Session struct {
-	Score uint
-	LastPiece int
+	Name       string
+	Score      uint
 	PieceCount uint
+	LastPiece  int
 }
 
 var SessionMap = make(map[string]*Session)
