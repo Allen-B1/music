@@ -89,7 +89,7 @@ func main() {
 
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		id := NewSession()
-		if cookie, err := r.Cookie("sid"); cookie == nil || err != nil {
+		if cookie, err := r.Cookie("sid"); cookie == nil || err != nil || SessionMap[cookie.Value] == nil {
 			http.SetCookie(w, &http.Cookie{
 				Name:  "sid",
 				Value: id,
