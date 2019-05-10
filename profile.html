@@ -4,10 +4,13 @@
         <title>Guess the Piece - Profile</title>
         <link rel="stylesheet" href="style.css">
         <style>
-main {
+#card {
     padding: 0 !important;
-    max-width: 400px;
 }
+main {
+	max-width: 400px;
+}
+
 #bar {
     background: #007F00;
     display: flex;
@@ -33,13 +36,15 @@ label {
       rel="stylesheet">
     </head>
     <body>
-        <a href="/" class="topleft button raised material-icons" aria-label="Back">&#xe5c4;</a>
-        <main class="raised" style="text-align:left;background:#00CC00;color:#fff">
-            <h1 style="text-align:center">{{.Name}}</h1>
-            <div id="bar">
-                <div id="score"><label>Score</label><br>{{.Score}} / {{mulu .PieceCount 10}}</div>
-                <div id="piece"><label>Attempts</label><br>{{.PieceCount}}</div>
-            </div>
+        <a href="/" class="topleft button raised material-icons" aria-label="Back" style="background:#F2A10C">&#xe5c4;</a>
+        <main>
+	        <div class="raised" id="card" style="text-align:left;background:#00CC00;color:#fff">
+	            <h1 style="text-align:center">{{.Name}}</h1>
+	            <div id="bar">
+	                <div id="score"><label>Score</label><br>{{.Score}} / {{mulu .PieceCount 10}}</div>
+	                <div id="piece"><label>Attempts</label><br>{{.PieceCount}}</div>
+	            </div>
+	        </div>
         </main>
     </body>
 </html>
