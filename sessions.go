@@ -9,7 +9,7 @@ type Session struct {
 	Name       string
 	Score      uint
 	PieceCount uint
-	LastPiece  int
+	NextPiece  uint
 	ViewId     string
 }
 
@@ -21,7 +21,6 @@ var ViewMap = make(map[string]string)
 func NewSession(name string) string {
 	id := strconv.FormatInt(rand.Int63(), 36)
 	SessionMap[id] = new(Session)
-	SessionMap[id].LastPiece = -1
 	SessionMap[id].Name = name
 
 	vid := strconv.FormatInt(rand.Int63n(36*36*36*36*36), 36) + "-" + name

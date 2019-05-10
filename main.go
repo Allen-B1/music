@@ -106,6 +106,7 @@ func main() {
 		}
 
 		id := NewSession(r.PostFormValue("name"))
+		SessionMap[id].NextPiece = uint(rand.Intn(len(inc)))
 		http.SetCookie(w, &http.Cookie{
 			Name:  "sid",
 			Value: id,
@@ -141,19 +142,11 @@ func main() {
 			return
 		}
 
-		pieceid := rand.Intn(len(inc))
-		if pieceid == session.LastPiece {
-			pieceid++
-		}
-
 		if DEBUG {
-			fmt.Println("/piece", session.LastPiece)
+			fmt.Println("/piece", session.NextPiece)
 		}
 
-		if pieceid >= len(inc) {
-			pieceid = 0
-		}
-		var piece = inc[pieceid]
+		var piece = inc[session.NextPiece]
 		t, err := NewTemplate("music.html")
 		if err != nil {
 			w.WriteHeader(500)
@@ -184,7 +177,7 @@ func main() {
 		}
 
 		if DEBUG {
-			fmt.Println("/submit", session.LastPiece)
+			fmt.Println("/submit", session.NextPiece)
 		}
 
 		name := r.PostFormValue("name")
@@ -196,14 +189,19 @@ func main() {
 			io.WriteString(w, "Internal error")
 		}
 
-		session.LastPiece = id
+		session.NextPiece = uint(rand.Intn(len(inc)))
 		session.PieceCount += 1
+
+		if DEBUG {
+			fmt.Println("New NextPiece: ", session.NextPiece)
+		}
 
 		results := NewResultsFromPiece(&inc[id], composer, name, key)
 		session.Score += results.Total()
 
 		values := url.Values{
 			"results": []string{results.String()},
+			"item":    []string{fmt.Sprint(id)},
 		}
 
 		w.Header().Set("Location", "/result?"+values.Encode())
@@ -217,21 +215,23 @@ func main() {
 		}
 
 		if DEBUG {
-			fmt.Println("/result", session.LastPiece)
+			fmt.Println("/result", session.NextPiece)
 		}
 
+		// Get results
 		query := r.URL.Query()
 		results := NewResults(query.Get("results"))
 		in := map[string]interface{}{
 			"Results": results,
 			"Session": session,
 		}
-		if session.LastPiece < 0 {
-			w.Header().Set("Location", "/piece")
-			w.WriteHeader(303)
-			return
+		// Get item #
+		item, err := strconv.Atoi(query.Get("item"))
+		if err != nil {
+			w.WriteHeader(500)
+			io.WriteString(w, "`item` is not a valid integer")
 		}
-		in["Item"] = inc[session.LastPiece]
+		in["Item"] = inc[item]
 
 		t, err := NewTemplate("result.html")
 		if err != nil {
