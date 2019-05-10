@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"html/template"
 	"io"
+	"io/ioutil"
 	"math/rand"
 	"net/http"
 	"net/url"
@@ -85,6 +86,33 @@ func main() {
 		fmt.Fprintln(os.Stderr, err)
 		return
 	}
+
+	http.HandleFunc("/images/", func(w http.ResponseWriter, r *http.Request) {
+		if !strings.HasSuffix(r.URL.Path, ".png") {
+			w.WriteHeader(404)
+			return
+		}
+		index := strings.LastIndex(r.URL.Path, "/")
+		itemidstr := r.URL.Path[index+1 : len(r.URL.Path)-4]
+		itemid, err := strconv.Atoi(itemidstr)
+		if err != nil {
+			w.WriteHeader(404)
+			return
+		}
+		resp, err := http.Get(inc[itemid].Image)
+		if err != nil {
+			w.Header().Set("Location", inc[itemid].Image)
+			w.WriteHeader(303)
+			return
+		}
+		body, err := ioutil.ReadAll(resp.Body)
+		if err != nil {
+			w.Header().Set("Location", inc[itemid].Image)
+			w.WriteHeader(303)
+			return
+		}
+		w.Write(body)
+	})
 
 	http.HandleFunc("/style.css", func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Cache-Control", "public, max-age=5")
