@@ -221,6 +221,9 @@ func main() {
 		}
 
 		session.NextPiece = uint(rand.Intn(len(inc)))
+		if session.NextPiece == uint(id) {
+			session.NextPiece += 1
+		}
 		session.PieceCount += 1
 
 		if DEBUG {
